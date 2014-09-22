@@ -40,6 +40,14 @@ defmodule FakeHttpTest do
     assert length(FakeHttp.query_params) == 2
   end
 
+  test "parses multiple query_params correctly" do
+    System.cmd("curl", ["-sd {\"foo\": \"bar\"}", FakeHttp.url <> "/user?foo=bar"])
+    System.cmd("curl", ["-sd {\"foo\": \"bar\"}", FakeHttp.url <> "/users"])
+    System.cmd("curl", ["-sd {\"foo\": \"bar\"}", FakeHttp.url <> "/user/friend?bar=foo&foo=bar"])
+    assert FakeHttp.query_params == [[foo: "bar"], [bar: "foo", foo: "bar"]]
+    assert length(FakeHttp.query_params) == 2
+  end
+
   test "last_query_param" do
     System.cmd("curl", ["-sd {\"foo\": \"bar\"}", FakeHttp.url <> "/user/friend?bar=foo"])
     System.cmd("curl", ["-sd {\"foo\": \"bar\"}", FakeHttp.url <> "/user?foo=bar"])
